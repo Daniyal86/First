@@ -1,0 +1,32 @@
+B) Consider the given relational table:
+employee(empno , empname, designation, city, salary, zipcode, county)
+1. Creates a sequence used to generate employee numbers for the empno column of the emp table.
+2. Create an Index on county.
+3. Create a view for employees having salary <50000
+and stays in ‘Mumbai’
+==>
+CREATE TABLE employee1 (
+    empno INT,
+    empname VARCHAR(255),
+    designation VARCHAR(255),
+    city VARCHAR(255),
+    salary DECIMAL(10, 2),
+    zipcode VARCHAR(10),
+    counrty VARCHAR(255)
+);
+
+1.Creates a sequence used to generate employee numbers for the empno column of the emp table.
+ 	   CREATE SEQUENCE empno_sequence
+ 	   START WITH 1
+  	   INCREMENT BY 1
+  	   NOCACHE
+   	   NOCYCLE;
+
+2.Create an Index on county.
+   CREATE INDEX idx_county ON employee(county);
+
+3.Create a view for employees having salary <50000 and stays in ‘Mumbai’.
+CREATE VIEW low_salary_mumbai_employees AS
+SELECT empno, empname, designation, city, salary, zipcode, county
+FROM employee
+WHERE salary < 50000 AND city = 'Mumbai';

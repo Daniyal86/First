@@ -1,0 +1,32 @@
+CREATE TABLE employees_audit (
+  audit_id NUMBER PRIMARY KEY,
+  employee_id NUMBER,
+  operation VARCHAR2(10),
+  operation_date DATE DEFAULT SYSDATE
+);
+
+CREATE SEQUENCE employees_audit_seq;
+
+CREATE OR REPLACE TRIGGER employees_audit_trg
+AFTER DELETE OR UPDATE ON employees
+FOR EACH ROW
+BEGIN
+  IF DELETING THEN
+    INSERT INTO employees_audit (audit_id, employee_id, operation, operation_date)
+    VALUES (employees_audit_seq.NEXTVAL, :OLD.employee_id, 'DELETE', SYSDATE);
+  ELSIF UPDATING THEN
+    INSERT INTO employees_audit (audit_id, employee_id, operation, operation_date)
+    VALUES (employees_audit_seq.NEXTVAL, :OLD.employee_id, 'UPDATE', SYSDATE);
+  END IF;
+END;
+/
+-- Update an employee's salary
+UPDATE employees
+SET salary = 55000
+WHERE employee_id = 1;
+
+-- Delete an employee
+DELETE FROM employees
+WHERE employee_id = 5;
+SELECT * FROM employees_audit;
+ALTER TRIGGER employees_audit_trg ENABLE;

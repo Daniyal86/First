@@ -1,0 +1,55 @@
+-- Create the table
+CREATE TABLE employees (
+    employee_id NUMBER PRIMARY KEY,
+    first_name VARCHAR2(50),
+    last_name VARCHAR2(50),
+    address VARCHAR2(100),
+    salary NUMBER,
+    birth_date DATE
+);
+drop table employees
+-- Insert data into the table
+INSERT INTO employees (employee_id, first_name, last_name, address, salary, birth_date)
+VALUES (1, 'John', 'Doe', '123 Main St, Anytown, USA', 50000, TO_DATE('1990-05-15', 'YYYY-MM-DD'));
+
+INSERT INTO employees (employee_id, first_name, last_name, address, salary, birth_date)
+VALUES (2, 'Jane', 'Smith', '456 Oak St, Sometown, USA', 60000, TO_DATE('1985-08-20', 'YYYY-MM-DD'));
+
+INSERT INTO employees (employee_id, first_name, last_name, address, salary, birth_date)
+VALUES (3, 'Michael', 'Johnson', '789 Elm St, Anothertown, USA', 70000, TO_DATE('1975-03-10', 'YYYY-MM-DD'));
+
+INSERT INTO employees (employee_id, first_name, last_name, address, salary, birth_date)
+VALUES (4, 'Emily', 'Brown', '321 Cedar St, Yetanothertown, USA', 55000, TO_DATE('1995-11-25', 'YYYY-MM-DD'));
+
+-- PL/SQL Block
+DECLARE
+    v_employee_name VARCHAR2(50); 
+    v_address VARCHAR2(100);       
+    v_salary NUMBER;               
+    v_age NUMBER;
+    v_age_category VARCHAR2(10);
+    
+    v_young_count NUMBER := 0;
+    v_old_count NUMBER := 0;
+    
+    CURSOR emp_cursor IS
+        SELECT first_name, address, salary, TRUNC(MONTHS_BETWEEN(SYSDATE, birth_date) / 12) AS age
+        FROM employees;
+BEGIN
+    OPEN emp_cursor;
+    LOOP
+        FETCH emp_cursor INTO v_employee_name, v_address, v_salary, v_age;
+        EXIT WHEN emp_cursor%NOTFOUND; -- Exit loop when no more rows
+        IF v_age < 30 THEN
+            v_age_category := 'Young';
+            v_young_count := v_young_count + 1;
+        ELSE
+            v_age_category := 'Old';
+            v_old_count := v_old_count + 1;
+        END IF;
+        DBMS_OUTPUT.PUT_LINE('Employee Name: ' || v_employee_name || ', Address: ' || v_address || ', Salary: ' || v_salary || ', Age Category: ' || v_age_category);
+    END LOOP;
+    CLOSE emp_cursor;
+    DBMS_OUTPUT.PUT_LINE('Count of Young Employees: ' || v_young_count);
+    DBMS_OUTPUT.PUT_LINE('Count of Old Employees: ' || v_old_count);
+END;
